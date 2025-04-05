@@ -1,11 +1,14 @@
-import CardWrapper from '@/app/ui/dashboard/cards';
 import { Card } from '@/app/ui/dashboard/cards';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchLatestInvoices, fetchCardData } from '@/app/lib/data';
+import { fetchCardData } from '@/app/lib/data'; 
 import { Suspense } from 'react';
-import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
+import {
+  RevenueChartSkeleton,
+  LatestInvoicesSkeleton,
+} from '@/app/ui/skeletons';
+
 
 export default async function Page() {
   const latestInvoices = await fetchLatestInvoices(); // Fetch the latest invoices
@@ -30,9 +33,8 @@ export default async function Page() {
         <Suspense fallback={<RevenueChartSkeleton />}>
           <RevenueChart />
         </Suspense>
-        {/* Pass the latestInvoices prop to LatestInvoices component */}
         <Suspense fallback={<LatestInvoicesSkeleton />}>
-          <LatestInvoices latestInvoices={latestInvoices} />
+          <LatestInvoices />
         </Suspense>
       </div>
     </main>
