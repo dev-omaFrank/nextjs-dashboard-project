@@ -1,4 +1,16 @@
 'use client';
+// Search.tsx (or wherever your Search component is defined)
+import React from 'react';
+
+interface SearchProps {
+  placeholder: string;  // Declare placeholder prop type
+}
+
+const Search: React.FC<SearchProps> = ({ placeholder }) => {
+  return <input type="text" placeholder={placeholder} />;
+};
+
+export default Search;
  
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
