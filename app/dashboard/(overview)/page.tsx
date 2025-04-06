@@ -1,3 +1,4 @@
+"use client";
 import { Suspense, useEffect, useState } from 'react';
 import CardWrapper from '@/app/ui/dashboard/cards';
 import { Card } from '@/app/ui/dashboard/cards';
