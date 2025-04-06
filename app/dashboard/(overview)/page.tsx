@@ -1,20 +1,36 @@
+import { Suspense, useEffect, useState } from 'react';
 import CardWrapper from '@/app/ui/dashboard/cards';
 import { Card } from '@/app/ui/dashboard/cards';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import { lusitana } from '@/app/ui/fonts';
 import { fetchLatestInvoices, fetchCardData } from '@/app/lib/data';
-import { Suspense } from 'react';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 
-export default async function Page() {
-  const latestInvoices = await fetchLatestInvoices(); // Fetch the latest invoices
-  const {
-    numberOfInvoices,
-    numberOfCustomers,
-    totalPaidInvoices,
-    totalPendingInvoices,
-  } = await fetchCardData();
+export default function Page() {
+  const [latestInvoices, setLatestInvoices] = useState(null);
+  const [cardData, setCardData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const invoices = await fetchLatestInvoices();
+      const cards = await fetchCardData();
+      setLatestInvoices(invoices);
+      setCardData(cards);
+    };
+    fetchData();
+  }, []);
+
+  if (!latestInvoices || !cardData) {
+    return (
+      <div>
+        {/* Loading skeletons while data is being fetched */}
+        <CardsSkeleton />
+        <RevenueChartSkeleton />
+        <LatestInvoicesSkeleton />
+      </div>
+    );
+  }
 
   return (
     <main>
@@ -30,7 +46,6 @@ export default async function Page() {
         <Suspense fallback={<RevenueChartSkeleton />}>
           <RevenueChart />
         </Suspense>
-        {/* Pass the latestInvoices prop to LatestInvoices component */}
         <Suspense fallback={<LatestInvoicesSkeleton />}>
           <LatestInvoices latestInvoices={latestInvoices} />
         </Suspense>
