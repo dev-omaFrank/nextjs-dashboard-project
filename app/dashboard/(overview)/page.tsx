@@ -1,5 +1,3 @@
-"use client";
-import { Suspense, useEffect, useState } from 'react';
 import CardWrapper from '@/app/ui/dashboard/cards';
 import { Card } from '@/app/ui/dashboard/cards';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
@@ -8,48 +6,44 @@ import { lusitana } from '@/app/ui/fonts';
 import { fetchLatestInvoices, fetchCardData } from '@/app/lib/data';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 
-export default function Page() {
-  const [latestInvoices, setLatestInvoices] = useState(null);
-  const [cardData, setCardData] = useState(null);
+export async function getServerSideProps() {
+  const latestInvoices = await fetchLatestInvoices(); // Fetch the latest invoices
+  const {
+    numberOfInvoices,
+    numberOfCustomers,
+    totalPaidInvoices,
+    totalPendingInvoices,
+  } = await fetchCardData();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const invoices = await fetchLatestInvoices();
-      const cards = await fetchCardData();
-      setLatestInvoices(invoices);
-      setCardData(cards);
-    };
-    fetchData();
-  }, []);
+  return {
+    props: {
+      latestInvoices,
+      numberOfInvoices,
+      numberOfCustomers,
+      totalPaidInvoices,
+      totalPendingInvoices,
+    },
+  };
+}
 
-  if (!latestInvoices || !cardData) {
-    return (
-      <div>
-        {/* Loading skeletons while data is being fetched */}
-        <CardsSkeleton />
-        <RevenueChartSkeleton />
-        <LatestInvoicesSkeleton />
-      </div>
-    );
-  }
-
+export default function Page({
+  latestInvoices,
+  numberOfInvoices,
+  numberOfCustomers,
+  totalPaidInvoices,
+  totalPendingInvoices,
+}) {
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Suspense fallback={<CardsSkeleton />}>
-          <CardWrapper />
-        </Suspense>
+        <CardWrapper />
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <Suspense fallback={<RevenueChartSkeleton />}>
-          <RevenueChart />
-        </Suspense>
-        <Suspense fallback={<LatestInvoicesSkeleton />}>
-          <LatestInvoices latestInvoices={latestInvoices} />
-        </Suspense>
+        <RevenueChart />
+        <LatestInvoices latestInvoices={latestInvoices} />
       </div>
     </main>
   );
