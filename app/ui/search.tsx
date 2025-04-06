@@ -17,7 +17,7 @@ export default function Search() {
     }
     replace(`${pathname}?${params.toString()}`);
   }
-}
+
 
 
 return (
